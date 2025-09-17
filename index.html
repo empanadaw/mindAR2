@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AR con MindAR - Múltiples Marcadores</title>
+  <title>AR con MindAR - Cambio por Movimiento</title>
   <!-- A-Frame y MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
@@ -11,7 +11,8 @@
     body {
       margin: 0;
       overflow: hidden;
-      font-family: Arial, sans-serif;
+      font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
     }
     #instructions {
       position: absolute;
@@ -20,113 +21,145 @@
       right: 0;
       text-align: center;
       color: white;
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 20px;
+      margin: 0 20px;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+    }
+    #instructions h2 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+    }
+    #instructions p {
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    #change-indicator {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 15px;
+      border-radius: 50px;
+      color: #333;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      display: none;
       z-index: 1000;
     }
-    .clickable {
-      cursor: pointer;
+    .scene-container {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
     }
   </style>
 </head>
 
 <body>
-  <a-scene
-    mindar-image="imageTargetSrc: ./targetss.mind; maxTrack: 3"
-    color-space="sRGB"
-    renderer="colorManagement: true, physicallyCorrectLights"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false"
-    cursor="rayOrigin: mouse"
-  >
+  <div class="scene-container">
+    <a-scene
+      mindar-image="imageTargetSrc: ./targetss.mind; maxTrack: 3"
+      color-space="sRGB"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false"
+    >
 
-    <!-- 🔹 1. Pre-carga de modelos y de las 3 imágenes del plano -->
-    <a-assets>
-      <!-- tus modelos 3D -->
-      <a-asset-item id="modelOne" src="./bellsproutt.glb"></a-asset-item>
-      <a-asset-item id="modelTwo" src="./wooperr.glb"></a-asset-item>
-      <a-asset-item id="modelThree" src="./magikarpp.glb"></a-asset-item>
-      <!-- imágenes para el plano clicable -->
-      <img id="img1" src="./bosque.jpg">
-      <img id="img2" src="./pantano.jpg">
-      <img id="img3" src="./mar.png">
-    </a-assets>
+      <!-- 🔹 1. Pre-carga de modelos y de las 3 imágenes del plano -->
+      <a-assets>
+        <!-- modelos 3D de ejemplo (reemplaza con los tuyos) -->
+        <a-asset-item id="modelOne" src="./bellsproutt.glb"></a-asset-item>
+        <a-asset-item id="modelTwo" src="./wooperr.glb"></a-asset-item>
+        <a-asset-item id="modelThree" src="./magikarpp.glb"></a-asset-item>
+        <!-- imágenes para el plano -->
+        <img id="img1" src="./bosque.jpg">
+        <img id="img2" src="./pantano.jpg">
+        <img id="img3" src="./mar.png">
+      </a-assets>
 
-    <!-- 🔹 2. Cámara -->
-    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      <!-- 🔹 2. Cámara -->
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- 🔹 3. Target 0: modelo + plano clicable -->
-    <a-entity mindar-image-target="targetIndex: 0">
-      <a-gltf-model src="#modelOne"
-                    position="0 -0.25 0"
-                    rotation="0 0 0"
-                    scale="0.1 0.1 0.1"
-                    animation-mixer>
-      </a-gltf-model>
+      <!-- 🔹 3. Target 0: modelo + plano -->
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-gltf-model src="#modelOne"
+                      position="0 -0.25 0"
+                      rotation="0 0 0"
+                      scale="0.1 0.1 0.1"
+                      animation-mixer>
+        </a-gltf-model>
 
-      <!-- Plano que cambia de imagen al click -->
-      <a-plane class="clickable background-plane"
-               src="#img1"
-               height="0.6"
-               width="1"
-               position="0 0.3 0"
-               rotation="0 0 0"
-               data-target-index="0">
-      </a-plane>
-    </a-entity>
+        <!-- Plano de fondo -->
+        <a-plane class="background-plane"
+                 src="#img1"
+                 height="0.6"
+                 width="1"
+                 position="0 0.3 0"
+                 rotation="0 0 0"
+                 data-target-index="0">
+        </a-plane>
+      </a-entity>
 
-    <!-- 🔹 4. Target 1: segundo modelo -->
-    <a-entity mindar-image-target="targetIndex: 1">
-      <a-gltf-model src="#modelTwo"
-                    position="0 -0.25 0"
-                    rotation="0 0 0"
-                    scale="0.1 0.1 0.1"
-                    animation-mixer>
-      </a-gltf-model>
-      
-      <!-- Plano para el segundo marcador -->
-      <a-plane class="clickable background-plane"
-               src="#img1"
-               height="0.6"
-               width="1"
-               position="0 0.3 0"
-               rotation="0 0 0"
-               data-target-index="1">
-      </a-plane>
-    </a-entity>
+      <!-- 🔹 4. Target 1: segundo modelo -->
+      <a-entity mindar-image-target="targetIndex: 1">
+        <a-gltf-model src="#modelTwo"
+                      position="0 -0.25 0"
+                      rotation="0 0 0"
+                      scale="0.1 0.1 0.1"
+                      animation-mixer>
+        </a-gltf-model>
+        
+        <!-- Plano para el segundo marcador -->
+        <a-plane class="background-plane"
+                 src="#img1"
+                 height="0.6"
+                 width="1"
+                 position="0 0.3 0"
+                 rotation="0 0 0"
+                 data-target-index="1">
+        </a-plane>
+      </a-entity>
 
-    <!-- 🔹 5. Target 2: tercer modelo -->
-    <a-entity mindar-image-target="targetIndex: 2">
-      <a-gltf-model src="#modelThree"
-                    position="0 -0.25 0"
-                    rotation="0 0 0"
-                    scale="0.1 0.1 0.1"
-                    animation-mixer>
-      </a-gltf-model>
-      
-      <!-- Plano para el tercer marcador -->
-      <a-plane class="clickable background-plane"
-               src="#img1"
-               height="0.6"
-               width="1"
-               position="0 0.3 0"
-               rotation="0 0 0"
-               data-target-index="2">
-      </a-plane>
-    </a-entity>
+      <!-- 🔹 5. Target 2: tercer modelo -->
+      <a-entity mindar-image-target="targetIndex: 2">
+        <a-gltf-model src="#modelThree"
+                      position="0 -0.25 0"
+                      rotation="0 0 0"
+                      scale="0.1 0.1 0.1"
+                      animation-mixer>
+        </a-gltf-model>
+        
+        <!-- Plano para el tercer marcador -->
+        <a-plane class="background-plane"
+                 src="#img1"
+                 height="0.6"
+                 width="1"
+                 position="0 0.3 0"
+                 rotation="0 0 0"
+                 data-target-index="2">
+        </a-plane>
+      </a-entity>
 
-  </a-scene>
-
-  <div id="instructions">
-    <p>Enfoca un marcador y toca el plano de fondo para cambiar la imagen</p>
+    </a-scene>
   </div>
 
-  <!-- 🔹 6. Lógica del cambio de imagen en los planos -->
+  <div id="change-indicator">¡Imagen cambiada!</div>
+
+  <div id="instructions">
+    <h2>¡Agita tu dispositivo para cambiar el fondo!</h2>
+    <p>Enfoca cualquiera de los marcadores y agita el dispositivo para cambiar la imagen de fondo.</p>
+    <p>También puedes tocar la pantalla si prefieres.</p>
+  </div>
+
+  <!-- 🔹 6. Lógica de cambio por movimiento -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Esperar a que la escena esté cargada
       const scene = document.querySelector('a-scene');
       const images = ['#img1', '#img2', '#img3'];
+      const changeIndicator = document.getElementById('change-indicator');
       
       // Objeto para guardar el índice actual de cada plano
       const currentImageIndex = {
@@ -135,26 +168,63 @@
         2: 0
       };
       
-      scene.addEventListener('loaded', () => {
-        // Seleccionar todos los planos con la clase 'background-plane'
+      // Variables para detección de agitado
+      let lastAcceleration = { x: 0, y: 0, z: 0 };
+      let shakeThreshold = 15;
+      let lastShakeTime = 0;
+      let shakeCooldown = 1000; // 1 segundo entre cambios
+      
+      // Función para cambiar todas las imágenes
+      function changeAllBackgrounds() {
         const planes = document.querySelectorAll('.background-plane');
+        const now = Date.now();
+        
+        // Enfriamiento para evitar cambios múltiples rápidos
+        if (now - lastShakeTime < shakeCooldown) return;
+        
+        lastShakeTime = now;
         
         planes.forEach(plane => {
-          // Agregar evento de clic a cada plano
-          plane.addEventListener('click', (event) => {
-            // Obtener el índice del target desde el atributo de datos
-            const targetIndex = parseInt(plane.getAttribute('data-target-index'));
-            
-            // Incrementar el índice y asegurarse de que esté en el rango
-            currentImageIndex[targetIndex] = (currentImageIndex[targetIndex] + 1) % images.length;
-            
-            // Cambiar la imagen del plano
-            plane.setAttribute('src', images[currentImageIndex[targetIndex]]);
-            
-            // Evitar que el evento se propague
-            event.stopPropagation();
-          });
+          const targetIndex = parseInt(plane.getAttribute('data-target-index'));
+          currentImageIndex[targetIndex] = (currentImageIndex[targetIndex] + 1) % images.length;
+          plane.setAttribute('src', images[currentImageIndex[targetIndex]]);
         });
+        
+        // Mostrar indicador de cambio
+        changeIndicator.style.display = 'block';
+        setTimeout(() => {
+          changeIndicator.style.display = 'none';
+        }, 2000);
+      }
+      
+      // Detectar agitado del dispositivo
+      function handleDeviceMotion(event) {
+        const acceleration = event.accelerationIncludingGravity;
+        let deltaX = Math.abs(acceleration.x - lastAcceleration.x);
+        let deltaY = Math.abs(acceleration.y - lastAcceleration.y);
+        let deltaZ = Math.abs(acceleration.z - lastAcceleration.z);
+        
+        // Si el movimiento es suficientemente fuerte, considerar como "agitado"
+        if (deltaX + deltaY + deltaZ > shakeThreshold) {
+          changeAllBackgrounds();
+        }
+        
+        lastAcceleration = acceleration;
+      }
+      
+      // También permitir cambio con toque
+      scene.addEventListener('touchstart', changeAllBackgrounds);
+      
+      // Iniciar detección de movimiento si está disponible
+      if (window.DeviceMotionEvent) {
+        window.addEventListener('devicemotion', handleDeviceMotion);
+      }
+      
+      // Para dispositivos que no soportan DeviceMotion, permitir cambio con clic
+      scene.addEventListener('click', changeAllBackgrounds);
+      
+      scene.addEventListener('loaded', () => {
+        console.log('Escena cargada y lista');
       });
     });
   </script>
