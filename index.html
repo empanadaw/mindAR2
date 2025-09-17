@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AR con MindAR - Cambio por Movimiento</title>
+  <title>AR con MindAR - Fondos Mejorados</title>
   <!-- A-Frame y MindAR -->
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
@@ -92,12 +92,12 @@
                       animation-mixer>
         </a-gltf-model>
 
-        <!-- Plano de fondo -->
+        <!-- Plano de fondo - MÁS GRANDE y MÁS ATRÁS -->
         <a-plane class="background-plane"
                  src="#img1"
-                 height="0.6"
-                 width="1"
-                 position="0 0.3 0"
+                 height="1.2"         <!-- Duplicado el tamaño -->
+                 width="2.0"          <!-- Duplicado el tamaño -->
+                 position="0 0.3 -0.5" <!-- Movido 0.5 unidades hacia atrás -->
                  rotation="0 0 0"
                  data-target-index="0">
         </a-plane>
@@ -112,12 +112,12 @@
                       animation-mixer>
         </a-gltf-model>
         
-        <!-- Plano para el segundo marcador -->
+        <!-- Plano para el segundo marcador - MÁS GRANDE y MÁS ATRÁS -->
         <a-plane class="background-plane"
                  src="#img1"
-                 height="0.6"
-                 width="1"
-                 position="0 0.3 0"
+                 height="1.2"
+                 width="2.0"
+                 position="0 0.3 -0.5"
                  rotation="0 0 0"
                  data-target-index="1">
         </a-plane>
@@ -132,12 +132,12 @@
                       animation-mixer>
         </a-gltf-model>
         
-        <!-- Plano para el tercer marcador -->
+        <!-- Plano para el tercer marcador - MÁS GRANDE y MÁS ATRÁS -->
         <a-plane class="background-plane"
                  src="#img1"
-                 height="0.6"
-                 width="1"
-                 position="0 0.3 0"
+                 height="1.2"
+                 width="2.0"
+                 position="0 0.3 -0.5"
                  rotation="0 0 0"
                  data-target-index="2">
         </a-plane>
@@ -146,15 +146,14 @@
     </a-scene>
   </div>
 
-  <div id="change-indicator">¡Imagen cambiada!</div>
+  <div id="change-indicator">¡Fondo cambiado!</div>
 
   <div id="instructions">
-    <h2>¡Agita tu dispositivo para cambiar el fondo!</h2>
-    <p>Enfoca cualquiera de los marcadores y agita el dispositivo para cambiar la imagen de fondo.</p>
-    <p>También puedes tocar la pantalla si prefieres.</p>
+    <h2>¡Toca cualquier parte de la pantalla para cambiar el fondo!</h2>
+    <p>Enfoca cualquiera de los marcadores y toca la pantalla para cambiar la imagen de fondo.</p>
   </div>
 
-  <!-- 🔹 6. Lógica de cambio por movimiento -->
+  <!-- 🔹 6. Lógica de cambio con click -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const scene = document.querySelector('a-scene');
@@ -168,11 +167,8 @@
         2: 0
       };
       
-      // Variables para detección de agitado
-      let lastAcceleration = { x: 0, y: 0, z: 0 };
-      let shakeThreshold = 15;
-      let lastShakeTime = 0;
-      let shakeCooldown = 1000; // 1 segundo entre cambios
+      let lastChangeTime = 0;
+      let changeCooldown = 500; // medio segundo entre cambios
       
       // Función para cambiar todas las imágenes
       function changeAllBackgrounds() {
@@ -180,9 +176,9 @@
         const now = Date.now();
         
         // Enfriamiento para evitar cambios múltiples rápidos
-        if (now - lastShakeTime < shakeCooldown) return;
+        if (now - lastChangeTime < changeCooldown) return;
         
-        lastShakeTime = now;
+        lastChangeTime = now;
         
         planes.forEach(plane => {
           const targetIndex = parseInt(plane.getAttribute('data-target-index'));
@@ -194,33 +190,11 @@
         changeIndicator.style.display = 'block';
         setTimeout(() => {
           changeIndicator.style.display = 'none';
-        }, 2000);
+        }, 1500);
       }
       
-      // Detectar agitado del dispositivo
-      function handleDeviceMotion(event) {
-        const acceleration = event.accelerationIncludingGravity;
-        let deltaX = Math.abs(acceleration.x - lastAcceleration.x);
-        let deltaY = Math.abs(acceleration.y - lastAcceleration.y);
-        let deltaZ = Math.abs(acceleration.z - lastAcceleration.z);
-        
-        // Si el movimiento es suficientemente fuerte, considerar como "agitado"
-        if (deltaX + deltaY + deltaZ > shakeThreshold) {
-          changeAllBackgrounds();
-        }
-        
-        lastAcceleration = acceleration;
-      }
-      
-      // También permitir cambio con toque
+      // Permitir cambio con toque o clic
       scene.addEventListener('touchstart', changeAllBackgrounds);
-      
-      // Iniciar detección de movimiento si está disponible
-      if (window.DeviceMotionEvent) {
-        window.addEventListener('devicemotion', handleDeviceMotion);
-      }
-      
-      // Para dispositivos que no soportan DeviceMotion, permitir cambio con clic
       scene.addEventListener('click', changeAllBackgrounds);
       
       scene.addEventListener('loaded', () => {
@@ -230,6 +204,7 @@
   </script>
 </body>
 </html>
+
 
 
 
