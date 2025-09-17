@@ -1,93 +1,164 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- A-Frame y MindAR -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  </head>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AR con MindAR - Múltiples Marcadores</title>
+  <!-- A-Frame y MindAR -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #instructions {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      z-index: 1000;
+    }
+    .clickable {
+      cursor: pointer;
+    }
+  </style>
+</head>
 
-  <body>
-    <a-scene
-      mindar-image="imageTargetSrc: ./targetss.mind; maxTrack: 3"
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: false"
-      cursor="rayOrigin: mouse"  <!-- necesario para clicks en móvil/pc -->
-    >
+<body>
+  <a-scene
+    mindar-image="imageTargetSrc: ./targetss.mind; maxTrack: 3"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    cursor="rayOrigin: mouse"
+  >
 
-      <!-- 🔹 1. Pre-carga de modelos y de las 3 imágenes del plano -->
-      <a-assets>
-        <!-- tus modelos 3D -->
-        <a-asset-item id="modelOne"   src="./bellsproutt.glb"></a-asset-item>
-        <a-asset-item id="modelTwo"   src="./wooperr.glb"></a-asset-item>
-        <a-asset-item id="modelThree" src="./magikarpp.glb"></a-asset-item>
-        <!-- imágenes para el plano clicable -->
-        <img id="img1" src="./bosque.jpg">
-        <img id="img2" src="./pantano.jpg">
-        <img id="img3" src="./mar.png">
-      </a-assets>
+    <!-- 🔹 1. Pre-carga de modelos y de las 3 imágenes del plano -->
+    <a-assets>
+      <!-- tus modelos 3D -->
+      <a-asset-item id="modelOne" src="./bellsproutt.glb"></a-asset-item>
+      <a-asset-item id="modelTwo" src="./wooperr.glb"></a-asset-item>
+      <a-asset-item id="modelThree" src="./magikarpp.glb"></a-asset-item>
+      <!-- imágenes para el plano clicable -->
+      <img id="img1" src="./bosque.jpg">
+      <img id="img2" src="./pantano.jpg">
+      <img id="img3" src="./mar.png">
+    </a-assets>
 
-      <!-- 🔹 2. Cámara -->
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <!-- 🔹 2. Cámara -->
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- 🔹 3. Target 0: modelo + plano clicable -->
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-gltf-model src="#modelOne"
-                      position="0 -0.25 0"
-                      rotation="0 0 0"
-                      scale="0.1 0.1 0.1"
-                      animation-mixer>
-        </a-gltf-model>
+    <!-- 🔹 3. Target 0: modelo + plano clicable -->
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-gltf-model src="#modelOne"
+                    position="0 -0.25 0"
+                    rotation="0 0 0"
+                    scale="0.1 0.1 0.1"
+                    animation-mixer>
+      </a-gltf-model>
 
-        <!-- Plano que cambia de imagen al click -->
-        <a-plane id="cambio-plane"
-                 class="clickable"
-                 src="#img1"
-                 height="0.6"
-                 width="1"
-                 position="0 0.3 0"   <!-- un poquito arriba del modelo -->
-                 rotation="0 0 0">
-        </a-plane>
-      </a-entity>
+      <!-- Plano que cambia de imagen al click -->
+      <a-plane class="clickable background-plane"
+               src="#img1"
+               height="0.6"
+               width="1"
+               position="0 0.3 0"
+               rotation="0 0 0"
+               data-target-index="0">
+      </a-plane>
+    </a-entity>
 
-      <!-- 🔹 4. Target 1: segundo modelo -->
-      <a-entity mindar-image-target="targetIndex: 1">
-        <a-gltf-model src="#modelTwo"
-                      position="0 -0.25 0"
-                      rotation="0 0 0"
-                      scale="0.1 0.1 0.1"
-                      animation-mixer>
-        </a-gltf-model>
-      </a-entity>
+    <!-- 🔹 4. Target 1: segundo modelo -->
+    <a-entity mindar-image-target="targetIndex: 1">
+      <a-gltf-model src="#modelTwo"
+                    position="0 -0.25 0"
+                    rotation="0 0 0"
+                    scale="0.1 0.1 0.1"
+                    animation-mixer>
+      </a-gltf-model>
+      
+      <!-- Plano para el segundo marcador -->
+      <a-plane class="clickable background-plane"
+               src="#img1"
+               height="0.6"
+               width="1"
+               position="0 0.3 0"
+               rotation="0 0 0"
+               data-target-index="1">
+      </a-plane>
+    </a-entity>
 
-      <!-- 🔹 5. Target 2: tercer modelo -->
-      <a-entity mindar-image-target="targetIndex: 2">
-        <a-gltf-model src="#modelThree"
-                      position="0 -0.25 0"
-                      rotation="0 0 0"
-                      scale="0.1 0.1 0.1"
-                      animation-mixer>
-        </a-gltf-model>
-      </a-entity>
+    <!-- 🔹 5. Target 2: tercer modelo -->
+    <a-entity mindar-image-target="targetIndex: 2">
+      <a-gltf-model src="#modelThree"
+                    position="0 -0.25 0"
+                    rotation="0 0 0"
+                    scale="0.1 0.1 0.1"
+                    animation-mixer>
+      </a-gltf-model>
+      
+      <!-- Plano para el tercer marcador -->
+      <a-plane class="clickable background-plane"
+               src="#img1"
+               height="0.6"
+               width="1"
+               position="0 0.3 0"
+               rotation="0 0 0"
+               data-target-index="2">
+      </a-plane>
+    </a-entity>
 
-    </a-scene>
+  </a-scene>
 
-    <!-- 🔹 6. Lógica del cambio de imagen en el plano -->
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const plane = document.querySelector('#cambio-plane');
-        const images = ['#img1', '#img2', '#img3'];
-        let index = 0;
+  <div id="instructions">
+    <p>Enfoca un marcador y toca el plano de fondo para cambiar la imagen</p>
+  </div>
 
-        plane.addEventListener('click', () => {
-          index = (index + 1) % images.length;
-          plane.setAttribute('src', images[index]);
+  <!-- 🔹 6. Lógica del cambio de imagen en los planos -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Esperar a que la escena esté cargada
+      const scene = document.querySelector('a-scene');
+      const images = ['#img1', '#img2', '#img3'];
+      
+      // Objeto para guardar el índice actual de cada plano
+      const currentImageIndex = {
+        0: 0,
+        1: 0,
+        2: 0
+      };
+      
+      scene.addEventListener('loaded', () => {
+        // Seleccionar todos los planos con la clase 'background-plane'
+        const planes = document.querySelectorAll('.background-plane');
+        
+        planes.forEach(plane => {
+          // Agregar evento de clic a cada plano
+          plane.addEventListener('click', (event) => {
+            // Obtener el índice del target desde el atributo de datos
+            const targetIndex = parseInt(plane.getAttribute('data-target-index'));
+            
+            // Incrementar el índice y asegurarse de que esté en el rango
+            currentImageIndex[targetIndex] = (currentImageIndex[targetIndex] + 1) % images.length;
+            
+            // Cambiar la imagen del plano
+            plane.setAttribute('src', images[currentImageIndex[targetIndex]]);
+            
+            // Evitar que el evento se propague
+            event.stopPropagation();
+          });
         });
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
 </html>
 
 
