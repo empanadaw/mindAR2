@@ -55,17 +55,6 @@
       height: 100vh;
       overflow: hidden;
     }
-    .debug-info {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 10px;
-      border-radius: 5px;
-      font-size: 14px;
-      z-index: 1000;
-    }
   </style>
 </head>
 
@@ -89,11 +78,6 @@
         <img id="img1" src="./bosque.jpg">
         <img id="img2" src="./pantano.jpg">
         <img id="img3" src="./mar.png">
-        
-        <!-- Texturas de debug para verificar que las imágenes cargan -->
-        <img id="debug1" src="https://placekitten.com/200/200">
-        <img id="debug2" src="https://placekitten.com/201/201">
-        <img id="debug3" src="https://placekitten.com/202/202">
       </a-assets>
 
       <!-- 🔹 2. Cámara -->
@@ -109,14 +93,13 @@
         </a-gltf-model>
 
         <!-- Plano de fondo - MÁS GRANDE y MÁS ATRÁS -->
-        <a-plane class="background-plane clickable"
+        <a-plane class="background-plane"
                  src="#img1"
-                 height="1.2"
-                 width="2.0"
-                 position="0 0.3 -1"
+                 height="1.2"   
+                 width="2.0"         
+                 position="0 0.3 -1" 
                  rotation="0 0 0"
-                 data-target-index="0"
-                 data-image-set="main">
+                 data-target-index="0">
         </a-plane>
       </a-entity>
 
@@ -130,14 +113,13 @@
         </a-gltf-model>
         
         <!-- Plano para el segundo marcador - MÁS GRANDE y MÁS ATRÁS -->
-        <a-plane class="background-plane clickable"
+        <a-plane class="background-plane"
                  src="#img1"
                  height="1.2"
                  width="2.0"
                  position="0 0.3 -1"
                  rotation="0 0 0"
-                 data-target-index="1"
-                 data-image-set="main">
+                 data-target-index="1">
         </a-plane>
       </a-entity>
 
@@ -151,14 +133,13 @@
         </a-gltf-model>
         
         <!-- Plano para el tercer marcador - MÁS GRANDE y MÁS ATRÁS -->
-        <a-plane class="background-plane clickable"
+        <a-plane class="background-plane"
                  src="#img1"
                  height="1.2"
                  width="2.0"
                  position="0 0.3 -1"
                  rotation="0 0 0"
-                 data-target-index="2"
-                 data-image-set="main">
+                 data-target-index="2">
         </a-plane>
       </a-entity>
 
@@ -166,7 +147,6 @@
   </div>
 
   <div id="change-indicator">¡Fondo cambiado!</div>
-  <div class="debug-info">Estado: Esperando interacción</div>
 
   <div id="instructions">
     <h2>¡Toca cualquier parte de la pantalla para cambiar el fondo!</h2>
@@ -178,9 +158,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       const scene = document.querySelector('a-scene');
       const images = ['#img1', '#img2', '#img3'];
-      const debugImages = ['#debug1', '#debug2', '#debug3'];
       const changeIndicator = document.getElementById('change-indicator');
-      const debugInfo = document.querySelector('.debug-info');
       
       // Objeto para guardar el índice actual de cada plano
       const currentImageIndex = {
@@ -191,7 +169,6 @@
       
       let lastChangeTime = 0;
       let changeCooldown = 500; // medio segundo entre cambios
-      let useDebugImages = false;
       
       // Función para cambiar todas las imágenes
       function changeAllBackgrounds() {
@@ -203,17 +180,10 @@
         
         lastChangeTime = now;
         
-        const imageSet = useDebugImages ? debugImages : images;
-        
         planes.forEach(plane => {
           const targetIndex = parseInt(plane.getAttribute('data-target-index'));
-          currentImageIndex[targetIndex] = (currentImageIndex[targetIndex] + 1) % imageSet.length;
-          
-          // Verificar que la imagen existe antes de asignarla
-          const newImage = imageSet[currentImageIndex[targetIndex]];
-          debugInfo.textContent = `Target ${targetIndex}: Cambiando a ${newImage}`;
-          
-          plane.setAttribute('src', newImage);
+          currentImageIndex[targetIndex] = (currentImageIndex[targetIndex] + 1) % images.length;
+          plane.setAttribute('src', images[currentImageIndex[targetIndex]]);
         });
         
         // Mostrar indicador de cambio
@@ -223,42 +193,14 @@
         }, 1500);
       }
       
-      // Función para verificar si las imágenes están cargadas
-      function checkImagesLoaded() {
-        const imgElements = document.querySelectorAll('img');
-        let allLoaded = true;
-        
-        imgElements.forEach(img => {
-          if (!img.complete || img.naturalHeight === 0) {
-            console.warn(`La imagen ${img.id} no se cargó correctamente`);
-            allLoaded = false;
-          }
-        });
-        
-        if (!allLoaded) {
-          debugInfo.textContent = "Algunas imágenes no cargaron. Usando imágenes de respaldo.";
-          useDebugImages = true;
-        } else {
-          debugInfo.textContent = "Todas las imágenes cargaron correctamente.";
-        }
-      }
-      
       // Permitir cambio con toque o clic
       scene.addEventListener('touchstart', changeAllBackgrounds);
       scene.addEventListener('click', changeAllBackgrounds);
       
       scene.addEventListener('loaded', () => {
         console.log('Escena cargada y lista');
-        
-        // Esperar un momento y verificar si las imágenes cargaron
-        setTimeout(checkImagesLoaded, 2000);
       });
     });
   </script>
 </body>
 </html>
-
-
-
-
-
